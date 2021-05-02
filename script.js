@@ -1,17 +1,74 @@
-// script.js
-
 const img = new Image(); // used to load image from <input> and draw to canvas
-
+var img_width = 400;
+var img_height = 400;
 // Fires whenever the img object loads a new image (such as with img.src =)
+
+
 img.addEventListener('load', () => {
   // TODO
+  var canvas = document.getElementById('user-image');
+  var ctx = canvas.getContext('2d');
+  var dim = getDimmensions(400,400, img_width, img_height);
 
+  //DRAWS THE IMAGE ON BLACK CANVAS
+  ctx.clearRect(0,0, 400, 400);
+  ctx.fillStyle = 'black';
+  ctx.fillRect(0, 0, 400, 400);
+  ctx.drawImage(img, dim['startX'], dim['startY'], dim['width'], dim['height']);
+  document.querySelector("[type='reset']").disabled = false;
+  document.querySelector("[type='button']").disabled = false;
   // Some helpful tips:
   // - Fill the whole Canvas with black first to add borders on non-square images, then draw on top
   // - Clear the form when a new image is selected
   // - If you draw the image to canvas here, it will update as soon as a new image is selected
 });
 
+//input: image-input
+const image_file = document.getElementById('image-input');
+image_file.onchange = () => {
+  const file = image_file.files[0];
+  img.src = URL.createObjectURL(file);
+  img.onload = () => {
+    img_height = img.height;
+    img_width = img.width;
+    URL.revokeObjectURL(img.src);
+  }
+}
+
+//FORM: submit
+const clicky = document.getElementById('generate-meme');
+clicky.addEventListener('submit', logSubmit);
+
+function logSubmit(event) {
+  event.preventDefault();
+  let toptop = document.getElementById('text-top').value;
+  let botbot = document.getElementById('text-bottom').value;
+
+  ctx.fillStyle = 'green';
+  ctx.fillText(toptop, ctx.width/2, 10)
+  ctx.fillText(toptop, ctx.width/2, 390)
+
+  document.querySelector("[type='submit']").disabled = true;
+  document.querySelector("[type='reset']").disabled = false;
+  document.querySelector("[type='button']").disabled = false;
+}
+
+//BUTTON: clear
+const clearButton = document.querySelector("[type='reset']");
+clearButton.onclick = function() {
+  var canvas = document.getElementById('user-image');
+  var ctx = canvas.getContext('2d');
+  ctx.clearRect(0, 0, 400, 400);
+  img.src = '';
+  document.querySelector("[type='reset']").disabled = true;
+  document.querySelector("[type='button']").disabled = true;
+}
+
+//BUTTON: Read Text
+const read_txt = document.querySelector("[type='button']");
+read_txt.onclick = function(){
+
+}
 /**
  * Takes in the dimensions of the canvas and the new image, then calculates the new
  * dimensions of the image so that it fits perfectly into the Canvas and maintains aspect ratio
